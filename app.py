@@ -27,8 +27,11 @@ def names(number):
 @app.route("/prediction", methods=["POST"])
 def prediction():
 	img = request.files['img']
-	img.save("static/pics/img.jpg")
-	image = Image.open("static/pics/img.jpg")
+	img_path = "static/pics/" + img.filename	
+	img.save(img_path)
+	# img.save("static/pics/img")
+	image = Image.open(img_path)
+	# filename, file_extension = os.path.splitext(img_path)
 	x = np.array(image.resize((64,64)))
 	x = np.expand_dims(x,axis=0)
 	res = (model.predict_on_batch(x))
@@ -36,7 +39,7 @@ def prediction():
 	# a=names(classification)
 	a=str(res[0][classification]*100) + '% Confidence ' + names(classification)
 
-	pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img.jpg')
+	pic1 = os.path.join(app.config['UPLOAD_FOLDER'], img.filename)
 
 	return render_template("prediction.html", data=a, user_image=pic1)
 
