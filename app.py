@@ -53,6 +53,9 @@ def prediction():
 			image = np.expand_dims(image, axis=-1) # Adding a channel to the image. Adds channel=1. Shape becomes (height,width,channels)
 			image = cv2.cvtColor(image,cv2.COLOR_GRAY2RGB) # Our model only accepts rgb image so changed the channels to 3 i.e.RGB
 		
+		if image.shape[2]==4: # Checking to see if image has 4 channels
+			image = cv2.cvtColor(image,cv2.COLOR_BGRA2BGR) # Changing 4 channel image to 3. RGBA 4 channel, RGB 3 channel.
+		
 		image = np.expand_dims(image,axis=0) #Adding Batch size = 1 to our image since our model takes 4 input parameters (Batch_size,height,width,channels)
 		
 		res = (model.predict_on_batch(image)) # Feeding the image to our model
