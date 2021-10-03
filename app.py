@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 # Loading model
 from tensorflow.keras.models import load_model
-model=load_model("finalprojectoldcode64.h5")
+model=load_model("project.h5")
 
 # Creating first end point to render index.html
 @app.route('/')
@@ -23,9 +23,10 @@ def index():
 def names(number):
     if number==0:
         return 'It\'s a tumor'
-    else:
+    elif number==1:
         return 'It\'s not a tumor'
-
+    else :
+        return 'Invalid Image'
 # Second end point to render prediction.html
 @app.route("/prediction", methods=["POST"])
 def prediction():
@@ -53,8 +54,8 @@ def prediction():
 			image = np.expand_dims(image, axis=-1) # Adding a channel to the image. Adds channel=1. Shape becomes (height,width,channels)
 			image = cv2.cvtColor(image,cv2.COLOR_GRAY2RGB) # Our model only accepts rgb image so changed the channels to 3 i.e.RGB
 		
-		if image.shape[2]==4: # Checking to see if image has 4 channels
-			image = cv2.cvtColor(image,cv2.COLOR_BGRA2BGR) # Changing 4 channel image to 3. RGBA 4 channel, RGB 3 channel.
+		if image.shape[2]==4: # Shape 2 means only (height,width) no channels
+			image = cv2.cvtColor(image,cv2.COLOR_BGRA2BGR) # Our model only accepts rgb image so changed the channels to 3 i.e.RGB
 		
 		image = np.expand_dims(image,axis=0) #Adding Batch size = 1 to our image since our model takes 4 input parameters (Batch_size,height,width,channels)
 		
@@ -62,7 +63,7 @@ def prediction():
 		
 		classification = np.where(res == np.amax(res))[1][0] # Model gives 2 output. So assigning either 0 or 1 correspoinding to the values into classification variable
 		
-		a='Model is ' + str(round(res[0][classification]*100, 2)) + '% Confident ' + names(classification) # Message to be displayed.
+		a = names(classification) # Message to be displayed.
 
 		return render_template("prediction.html", data=a, user_image=img_path) #Rendering prediction.html and passing message and image to be displayed	
 
